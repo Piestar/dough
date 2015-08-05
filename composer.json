@@ -1,0 +1,15 @@
+{
+	"name": "piestar/dough",
+	"description": "The Dough Templating Language",
+	"keywords": ["dough", "php", "template", "templating language"],
+	"license": "MIT",
+	"type": "project",
+	"require-dev": {
+		"phpunit/phpunit": "~4.6.6"
+	},
+	"autoload": {
+		"psr-4": {
+			"Piestar\\Dough\\": "src/"
+		}
+	}
+}
