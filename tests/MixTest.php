@@ -39,15 +39,35 @@ class MixTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('Eat more apple <pie> <now>', DoughMixer::mix($string, $data));
 	}
 
-	public function testIgnoresRottenDough() {
+	public function testIgnoresMisformedTags() {
 		$data = [
 			'type' => 'apple',
 			'what' => '<pie>',
 			'when' => '<now>',
 		];
-		$string = 'Eat more {{ type } {! what !!} {!! when !!}';
+		$string = 'Eat more { type }} {! what !!} {!! when !!}';
 
-		$this->assertEquals('Eat more {{ type } {! what !!} <now>', DoughMixer::mix($string, $data));
+		$this->assertEquals('Eat more { type }} {! what !!} <now>', DoughMixer::mix($string, $data));
+	}
+
+	public function testIgnoresRottenDough() {
+		$data = [
+			'when' => '<now>',
+		];
+		$string = 'Eat more {{ type }} {!! what !!} {!! when !!}';
+
+		$this->assertEquals('Eat more {{ type }} {!! what !!} <now>', DoughMixer::mix($string, $data));
+	}
+
+	public function testIgnoresNull() {
+		$data = [
+			'type' => null,
+			'what' => '<pie>',
+			'when' => '<now>',
+		];
+		$string = 'Eat more {{ type }} {{ what }} {!! when !!}';
+
+		$this->assertEquals('Eat more  &lt;pie&gt; <now>', DoughMixer::mix($string, $data));
 	}
 }
 

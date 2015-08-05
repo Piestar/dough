@@ -32,8 +32,8 @@ class DoughMixer {
 	 * @return string Returns $template with {{ }} and {!! !!} constructs replaced with their corresponding $data values.
 	 */
 	public static function mix($dough, $ingredients) {
-		$dough = DoughMixer::replace($dough, $ingredients, true); // Process {{ }}
-		$dough = DoughMixer::replace($dough, $ingredients, false);  // Process {!! !!}
+		$dough = DoughMixer::replace($dough, $ingredients, true);  // Process {{ }}
+		$dough = DoughMixer::replace($dough, $ingredients, false); // Process {!! !!}
 		return $dough;
 	}
 
@@ -79,10 +79,6 @@ class DoughMixer {
 	 */
 	protected static function array_get($array, $key, $default = null)
 	{
-		if (is_null($key)) {
-			return $array;
-		}
-
 		if (isset($array[$key])) {
 			return $array[$key];
 		}
