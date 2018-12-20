@@ -32,6 +32,10 @@ class DoughMixer {
 	 * @return string Returns $template with {{ }} and {!! !!} constructs replaced with their corresponding $data values.
 	 */
 	public static function mix($dough, $ingredients) {
+		if (strpos($dough, '{') === false) {
+			return $dough;
+		}
+
 		$dough = DoughMixer::replace($dough, $ingredients, true);  // Process {{ }}
 		$dough = DoughMixer::replace($dough, $ingredients, false); // Process {!! !!}
 		return $dough;
@@ -60,7 +64,7 @@ class DoughMixer {
 				// To re-substitute, we currently just use another regex containing the originally matched pattern.
 				$regex      = '/' . $matches[0][$index] . '/';
 				$finalValue = $escape ? self::escape($finalValue) : $finalValue;
-				$dough     = preg_replace($regex, $finalValue, $dough);
+				$dough      = preg_replace($regex, $finalValue, $dough);
 			}
 
 		}
