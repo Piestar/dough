@@ -14,11 +14,18 @@
  * It also allows for arrays in its data:
  *     {{ pie.name }}
  *
+ * A tag may declare an inline default with the ??? delimiter (an optional =
+ * may follow it) and a quoted string, using either quote style. The default
+ * is emitted when the path is unresolved, null, or an empty string:
+ *     {{ user.last_name???="Member" }}
+ *     {!! user.link???='<a href="/">home</a>' !!}
+ *
  * Examples:
  *
  *   DoughMixer::mix("pie is {{ pie }}", ['pie' => '<good>']) => "pie is &lt;good&rt;"
  *   DoughMixer::mix("pie is {!! pie !!}", ['pie' => '']) => "pie is <good>"
  *   DoughMixer::mix("Eat {{ pie.name }}!", ['pie' => ['name' => 'Apple Pie']]) => "Eat Apple Pie!"
+ *   DoughMixer::mix('Hi {{ name???="friend" }}', []) => "Hi friend"
  *
  */
 class DoughMixer {
@@ -55,21 +62,45 @@ class DoughMixer {
 		if (preg_match_all($pattern, $dough, $matches)) {
 
 			foreach ($matches[1] as $index => $match) {
-				$finalValue = self::array_get($ingredients, $match, self::ROTTEN_DOUGH);
+				list($path, $default, $hasDefault) = self::parseDefault($match);
 
-				if ($finalValue === self::ROTTEN_DOUGH) {
+				$finalValue = self::array_get($ingredients, $path, self::ROTTEN_DOUGH);
+
+				if ($hasDefault) {
+					if ($finalValue === self::ROTTEN_DOUGH || $finalValue === null || $finalValue === '') {
+						$finalValue = $default;
+					}
+				} else if ($finalValue === self::ROTTEN_DOUGH) {
 					continue;
 				}
 
-				// To re-substitute, we currently just use another regex containing the originally matched pattern.
-				$regex      = '/' . $matches[0][$index] . '/';
 				$finalValue = $escape ? self::escape($finalValue) : $finalValue;
-				$dough      = preg_replace($regex, $finalValue, $dough);
+				$dough      = str_replace($matches[0][$index], $finalValue, $dough);
 			}
 
 		}
 
 		return $dough;
+	}
+
+	/**
+	 * Splits a tag expression into its path and optional inline default.
+	 *
+	 * A default is written with the ??? delimiter (an optional = may follow it)
+	 * followed by a quoted string, e.g. {{ user.name???="Member" }}. Either
+	 * quote style is accepted, and the quoted value may contain spaces.
+	 *
+	 * @param string $expression
+	 *
+	 * @return array [string $path, string|null $default, bool $hasDefault]
+	 */
+	protected static function parseDefault($expression)
+	{
+		if (preg_match('/^(.*?)\s*\?\?\?=?\s*([\'"])(.*)\2$/s', $expression, $matches)) {
+			return [trim($matches[1]), $matches[3], true];
+		}
+
+		return [$expression, null, false];
 	}
 
 	/**
@@ -104,6 +135,6 @@ class DoughMixer {
 			return $value->toHtml();
 		}
 
-		return htmlentities($value, ENT_QUOTES, 'UTF-8', false);
+		return htmlentities((string) $value, ENT_QUOTES, 'UTF-8', false);
 	}
 }

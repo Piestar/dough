@@ -69,6 +69,56 @@ class MixTest extends PHPUnit_Framework_TestCase {
 
 		$this->assertEquals('Eat more  &lt;pie&gt; <now>', DoughMixer::mix($string, $data));
 	}
+
+	public function testUsesResolvedValueOverDefault() {
+		$this->assertEquals('Smith', DoughMixer::mix('{{ user.last_name???="Member" }}', ['user' => ['last_name' => 'Smith']]));
+	}
+
+	public function testDefaultWhenMissing() {
+		$this->assertEquals('Member', DoughMixer::mix('{{ user.last_name???="Member" }}', ['user' => []]));
+	}
+
+	public function testDefaultWhenNull() {
+		$this->assertEquals('Member', DoughMixer::mix('{{ user.last_name???="Member" }}', ['user' => ['last_name' => null]]));
+	}
+
+	public function testDefaultWhenEmptyString() {
+		$this->assertEquals('Member', DoughMixer::mix('{{ user.last_name???="Member" }}', ['user' => ['last_name' => '']]));
+	}
+
+	public function testKeepsZeroValue() {
+		$this->assertEquals('0', DoughMixer::mix('{{ count???="none" }}', ['count' => '0']));
+	}
+
+	public function testDefaultAcceptsSingleQuotes() {
+		$this->assertEquals('Member', DoughMixer::mix("{{ user.last_name???='Member' }}", ['user' => []]));
+	}
+
+	public function testDefaultDelimiterWithoutEquals() {
+		$this->assertEquals('Member', DoughMixer::mix('{{ user.last_name???"Member" }}', ['user' => []]));
+	}
+
+	public function testDefaultMayContainSpaces() {
+		$this->assertEquals('Valued Member', DoughMixer::mix('{{ user.last_name???="Valued Member" }}', ['user' => []]));
+	}
+
+	public function testDefaultIsEscapedInEscapedTag() {
+		$this->assertEquals('A &amp; B', DoughMixer::mix('{{ x???="A & B" }}', []));
+	}
+
+	public function testDefaultIsRawInRawTag() {
+		$this->assertEquals('<b>Member</b>', DoughMixer::mix("{!! x???='<b>Member</b>' !!}", []));
+	}
+
+	public function testResolvesDefaultOnDeepPath() {
+		$this->assertEquals('deep', DoughMixer::mix('{{ a.b.c???="x" }}', ['a' => ['b' => ['c' => 'deep']]]));
+		$this->assertEquals('x', DoughMixer::mix('{{ a.b.c???="x" }}', ['a' => ['b' => []]]));
+	}
+
+	public function testMixesDefaultAlongsideOrdinaryTags() {
+		$string = 'Dear {{ user.last_name???="Member" }} ({{ user.first_name }})';
+		$this->assertEquals('Dear Member (Jo)', DoughMixer::mix($string, ['user' => ['first_name' => 'Jo']]));
+	}
 }
 
 class Htmlable {
