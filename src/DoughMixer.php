@@ -14,18 +14,18 @@
  * It also allows for arrays in its data:
  *     {{ pie.name }}
  *
- * A tag may declare an inline default with the ??? delimiter (an optional =
- * may follow it) and a quoted string, using either quote style. The default
- * is emitted when the path is unresolved, null, or an empty string:
- *     {{ user.last_name???="Member" }}
- *     {!! user.link???='<a href="/">home</a>' !!}
+ * A tag may declare an inline default with the `or` keyword and a quoted
+ * string, using either quote style. The default is emitted when the path is
+ * unresolved, null, or an empty string:
+ *     {{ user.last_name or "Member" }}
+ *     {!! user.link or '<a href="/">home</a>' !!}
  *
  * Examples:
  *
  *   DoughMixer::mix("pie is {{ pie }}", ['pie' => '<good>']) => "pie is &lt;good&rt;"
  *   DoughMixer::mix("pie is {!! pie !!}", ['pie' => '']) => "pie is <good>"
  *   DoughMixer::mix("Eat {{ pie.name }}!", ['pie' => ['name' => 'Apple Pie']]) => "Eat Apple Pie!"
- *   DoughMixer::mix('Hi {{ name???="friend" }}', []) => "Hi friend"
+ *   DoughMixer::mix('Hi {{ name or "friend" }}', []) => "Hi friend"
  *
  */
 class DoughMixer {
@@ -86,9 +86,9 @@ class DoughMixer {
 	/**
 	 * Splits a tag expression into its path and optional inline default.
 	 *
-	 * A default is written with the ??? delimiter (an optional = may follow it)
-	 * followed by a quoted string, e.g. {{ user.name???="Member" }}. Either
-	 * quote style is accepted, and the quoted value may contain spaces.
+	 * A default is written with the `or` keyword followed by a quoted string,
+	 * e.g. {{ user.name or "Member" }}. Either quote style is accepted, and the
+	 * quoted value may contain spaces.
 	 *
 	 * @param string $expression
 	 *
@@ -96,7 +96,7 @@ class DoughMixer {
 	 */
 	protected static function parseDefault($expression)
 	{
-		if (preg_match('/^(.*?)\s*\?\?\?=?\s*([\'"])(.*)\2$/s', $expression, $matches)) {
+		if (preg_match('/^(.*?)\s+or\s+([\'"])(.*)\2$/s', $expression, $matches)) {
 			return [trim($matches[1]), $matches[3], true];
 		}
 

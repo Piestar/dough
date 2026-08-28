@@ -71,52 +71,52 @@ class MixTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testUsesResolvedValueOverDefault() {
-		$this->assertEquals('Smith', DoughMixer::mix('{{ user.last_name???="Member" }}', ['user' => ['last_name' => 'Smith']]));
+		$this->assertEquals('Smith', DoughMixer::mix('{{ user.last_name or "Member" }}', ['user' => ['last_name' => 'Smith']]));
 	}
 
 	public function testDefaultWhenMissing() {
-		$this->assertEquals('Member', DoughMixer::mix('{{ user.last_name???="Member" }}', ['user' => []]));
+		$this->assertEquals('Member', DoughMixer::mix('{{ user.last_name or "Member" }}', ['user' => []]));
 	}
 
 	public function testDefaultWhenNull() {
-		$this->assertEquals('Member', DoughMixer::mix('{{ user.last_name???="Member" }}', ['user' => ['last_name' => null]]));
+		$this->assertEquals('Member', DoughMixer::mix('{{ user.last_name or "Member" }}', ['user' => ['last_name' => null]]));
 	}
 
 	public function testDefaultWhenEmptyString() {
-		$this->assertEquals('Member', DoughMixer::mix('{{ user.last_name???="Member" }}', ['user' => ['last_name' => '']]));
+		$this->assertEquals('Member', DoughMixer::mix('{{ user.last_name or "Member" }}', ['user' => ['last_name' => '']]));
 	}
 
 	public function testKeepsZeroValue() {
-		$this->assertEquals('0', DoughMixer::mix('{{ count???="none" }}', ['count' => '0']));
+		$this->assertEquals('0', DoughMixer::mix('{{ count or "none" }}', ['count' => '0']));
 	}
 
 	public function testDefaultAcceptsSingleQuotes() {
-		$this->assertEquals('Member', DoughMixer::mix("{{ user.last_name???='Member' }}", ['user' => []]));
+		$this->assertEquals('Member', DoughMixer::mix("{{ user.last_name or 'Member' }}", ['user' => []]));
 	}
 
-	public function testDefaultDelimiterWithoutEquals() {
-		$this->assertEquals('Member', DoughMixer::mix('{{ user.last_name???"Member" }}', ['user' => []]));
+	public function testOrInsideDefaultIsPreserved() {
+		$this->assertEquals('cats or dogs', DoughMixer::mix('{{ pets or "cats or dogs" }}', []));
 	}
 
 	public function testDefaultMayContainSpaces() {
-		$this->assertEquals('Valued Member', DoughMixer::mix('{{ user.last_name???="Valued Member" }}', ['user' => []]));
+		$this->assertEquals('Valued Member', DoughMixer::mix('{{ user.last_name or "Valued Member" }}', ['user' => []]));
 	}
 
 	public function testDefaultIsEscapedInEscapedTag() {
-		$this->assertEquals('A &amp; B', DoughMixer::mix('{{ x???="A & B" }}', []));
+		$this->assertEquals('A &amp; B', DoughMixer::mix('{{ x or "A & B" }}', []));
 	}
 
 	public function testDefaultIsRawInRawTag() {
-		$this->assertEquals('<b>Member</b>', DoughMixer::mix("{!! x???='<b>Member</b>' !!}", []));
+		$this->assertEquals('<b>Member</b>', DoughMixer::mix("{!! x or '<b>Member</b>' !!}", []));
 	}
 
 	public function testResolvesDefaultOnDeepPath() {
-		$this->assertEquals('deep', DoughMixer::mix('{{ a.b.c???="x" }}', ['a' => ['b' => ['c' => 'deep']]]));
-		$this->assertEquals('x', DoughMixer::mix('{{ a.b.c???="x" }}', ['a' => ['b' => []]]));
+		$this->assertEquals('deep', DoughMixer::mix('{{ a.b.c or "x" }}', ['a' => ['b' => ['c' => 'deep']]]));
+		$this->assertEquals('x', DoughMixer::mix('{{ a.b.c or "x" }}', ['a' => ['b' => []]]));
 	}
 
 	public function testMixesDefaultAlongsideOrdinaryTags() {
-		$string = 'Dear {{ user.last_name???="Member" }} ({{ user.first_name }})';
+		$string = 'Dear {{ user.last_name or "Member" }} ({{ user.first_name }})';
 		$this->assertEquals('Dear Member (Jo)', DoughMixer::mix($string, ['user' => ['first_name' => 'Jo']]));
 	}
 }
