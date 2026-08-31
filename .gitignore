@@ -1,2 +1,5 @@
-composer.lock
 /vendor
+composer.lock
+.phpunit.result.cache
+.phpunit.cache
+CLAUDE.md
