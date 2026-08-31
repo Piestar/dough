@@ -22,8 +22,8 @@
  *
  * Examples:
  *
- *   DoughMixer::mix("pie is {{ pie }}", ['pie' => '<good>']) => "pie is &lt;good&rt;"
- *   DoughMixer::mix("pie is {!! pie !!}", ['pie' => '']) => "pie is <good>"
+ *   DoughMixer::mix("pie is {{ pie }}", ['pie' => '<good>']) => "pie is &lt;good&gt;"
+ *   DoughMixer::mix("pie is {!! pie !!}", ['pie' => '<good>']) => "pie is <good>"
  *   DoughMixer::mix("Eat {{ pie.name }}!", ['pie' => ['name' => 'Apple Pie']]) => "Eat Apple Pie!"
  *   DoughMixer::mix('Hi {{ name or "friend" }}', []) => "Hi friend"
  *
