@@ -1,15 +1,41 @@
 {
 	"name": "piestar/dough",
-	"description": "The Dough Templating Language",
-	"keywords": ["dough", "php", "template", "templating language"],
+	"description": "A tiny, deliberately limited templating language for user-authored tokens in mail merges.",
+	"keywords": ["dough", "template", "templating", "mail merge", "tokens", "placeholders"],
+	"type": "library",
 	"license": "MIT",
-	"type": "project",
+	"homepage": "https://github.com/Piestar/dough",
+	"authors": [
+		{
+			"name": "Ben Claar",
+			"email": "ben@piestar.com",
+			"homepage": "https://github.com/Piestar"
+		}
+	],
+	"support": {
+		"issues": "https://github.com/Piestar/dough/issues",
+		"source": "https://github.com/Piestar/dough"
+	},
+	"require": {
+		"php": ">=5.4"
+	},
 	"require-dev": {
-		"phpunit/phpunit": "~4.6.6"
+		"phpunit/phpunit": "^11.5.50 || ^12.5.8 || ^13.3"
 	},
 	"autoload": {
 		"psr-4": {
 			"Piestar\\Dough\\": "src/"
 		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Piestar\\Dough\\Tests\\": "tests/"
+		}
+	},
+	"scripts": {
+		"test": "phpunit"
+	},
+	"config": {
+		"sort-packages": true
 	}
 }

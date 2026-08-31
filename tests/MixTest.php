@@ -1,8 +1,9 @@
-<?php
+<?php namespace Piestar\Dough\Tests;
 
 use Piestar\Dough\DoughMixer;
+use PHPUnit\Framework\TestCase;
 
-class MixTest extends PHPUnit_Framework_TestCase {
+class MixTest extends TestCase {
 
 	public function testEscapedAndUnescapedMixing() {
 		$data = [
